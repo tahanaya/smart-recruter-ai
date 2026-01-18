@@ -1,0 +1,222 @@
+<odoo>
+    <!-- Données de démonstration pour Smart Recruiter AI -->
+
+    <!-- Profils de Postes de Démonstration -->
+    <record id="job_profile_python_dev" model="smart.recruiter.job.profile">
+        <field name="name">Développeur Python Senior</field>
+        <field name="description">Développeur Python avec expertise Odoo et frameworks web modernes</field>
+        <field name="priority">high</field>
+        <field name="min_score_threshold">70</field>
+        <field name="active">True</field>
+        <field name="color">3</field>
+    </record>
+
+    <record id="job_profile_fullstack" model="smart.recruiter.job.profile">
+        <field name="name">Développeur Full-Stack</field>
+        <field name="description">Développeur polyvalent frontend et backend</field>
+        <field name="priority">medium</field>
+        <field name="min_score_threshold">60</field>
+        <field name="active">True</field>
+        <field name="color">5</field>
+    </record>
+
+    <record id="job_profile_devops" model="smart.recruiter.job.profile">
+        <field name="name">Ingénieur DevOps</field>
+        <field name="description">Expert en automatisation et infrastructure cloud</field>
+        <field name="priority">urgent</field>
+        <field name="min_score_threshold">75</field>
+        <field name="active">True</field>
+        <field name="color">1</field>
+    </record>
+
+    <!-- Compétences pour Développeur Python Senior -->
+    <record id="skill_python_1" model="smart.recruiter.skill">
+        <field name="name">Python</field>
+        <field name="weight">20</field>
+        <field name="profile_id" ref="job_profile_python_dev"/>
+        <field name="is_critical">True</field>
+        <field name="skill_type">technical</field>
+    </record>
+
+    <record id="skill_odoo_1" model="smart.recruiter.skill">
+        <field name="name">Odoo</field>
+        <field name="weight">20</field>
+        <field name="profile_id" ref="job_profile_python_dev"/>
+        <field name="is_critical">True</field>
+        <field name="skill_type">technical</field>
+    </record>
+
+    <record id="skill_postgresql_1" model="smart.recruiter.skill">
+        <field name="name">PostgreSQL</field>
+        <field name="weight">15</field>
+        <field name="profile_id" ref="job_profile_python_dev"/>
+        <field name="is_critical">True</field>
+        <field name="skill_type">technical</field>
+    </record>
+
+    <record id="skill_git_1" model="smart.recruiter.skill">
+        <field name="name">Git</field>
+        <field name="weight">10</field>
+        <field name="profile_id" ref="job_profile_python_dev"/>
+        <field name="is_critical">False</field>
+        <field name="skill_type">technical</field>
+    </record>
+
+    <record id="skill_docker_1" model="smart.recruiter.skill">
+        <field name="name">Docker</field>
+        <field name="weight">12</field>
+        <field name="profile_id" ref="job_profile_python_dev"/>
+        <field name="is_critical">True</field>
+        <field name="skill_type">technical</field>
+    </record>
+
+    <!-- Compétences pour Full-Stack -->
+    <record id="skill_javascript_2" model="smart.recruiter.skill">
+        <field name="name">JavaScript</field>
+        <field name="weight">18</field>
+        <field name="profile_id" ref="job_profile_fullstack"/>
+        <field name="is_critical">True</field>
+        <field name="skill_type">technical</field>
+    </record>
+
+    <record id="skill_react_2" model="smart.recruiter.skill">
+        <field name="name">React</field>
+        <field name="weight">18</field>
+        <field name="profile_id" ref="job_profile_fullstack"/>
+        <field name="is_critical">True</field>
+        <field name="skill_type">technical</field>
+    </record>
+
+    <record id="skill_nodejs_2" model="smart.recruiter.skill">
+        <field name="name">Node.js</field>
+        <field name="weight">18</field>
+        <field name="profile_id" ref="job_profile_fullstack"/>
+        <field name="is_critical">True</field>
+        <field name="skill_type">technical</field>
+    </record>
+
+    <!-- Compétences pour DevOps -->
+    <record id="skill_kubernetes_3" model="smart.recruiter.skill">
+        <field name="name">Kubernetes</field>
+        <field name="weight">20</field>
+        <field name="profile_id" ref="job_profile_devops"/>
+        <field name="is_critical">True</field>
+        <field name="skill_type">technical</field>
+    </record>
+
+    <record id="skill_docker_3" model="smart.recruiter.skill">
+        <field name="name">Docker</field>
+        <field name="weight">20</field>
+        <field name="profile_id" ref="job_profile_devops"/>
+        <field name="is_critical">True</field>
+        <field name="skill_type">technical</field>
+    </record>
+
+    <record id="skill_aws_3" model="smart.recruiter.skill">
+        <field name="name">AWS</field>
+        <field name="weight">15</field>
+        <field name="profile_id" ref="job_profile_devops"/>
+        <field name="is_critical">True</field>
+        <field name="skill_type">technical</field>
+    </record>
+
+    <!-- Candidats de Démonstration -->
+
+    <!-- Candidat 1: Profil Faible -->
+    <record id="demo_candidate_low" model="res.partner">
+        <field name="name">Jean Dupont</field>
+        <field name="email">jean.dupont@example.com</field>
+        <field name="phone">+33 6 12 34 56 78</field>
+        <field name="comment">Débutant en informatique.
+Quelques connaissances en HTML et CSS.
+Motivé pour apprendre.</field>
+    </record>
+
+    <!-- Candidat 2: Profil Moyen -->
+    <record id="demo_candidate_medium" model="res.partner">
+        <field name="name">Marie Martin</field>
+        <field name="email">marie.martin@example.com</field>
+        <field name="phone">+33 6 23 45 67 89</field>
+        <field name="comment">Développeuse Junior avec 2 ans d'expérience.
+Compétences: Python, Django, MySQL, Git
+Bonnes connaissances en HTML, CSS, JavaScript
+Parle anglais couramment</field>
+    </record>
+
+    <!-- Candidat 3: Top Profil -->
+    <record id="demo_candidate_high" model="res.partner">
+        <field name="name">Ahmed Ben Ali</field>
+        <field name="email">ahmed.benali@example.com</field>
+        <field name="phone">+33 6 34 56 78 90</field>
+        <field name="comment">Développeur Full-Stack Senior avec 8 ans d'expérience.
+
+Compétences Techniques:
+- Backend: Python, Django, Odoo, Node.js, Java
+- Frontend: React, Angular, Vue.js, JavaScript
+- Bases de données: PostgreSQL, MySQL, MongoDB
+- DevOps: Docker, Kubernetes, Jenkins, CI/CD, AWS
+- Outils: Git, GitLab, GitHub
+
+Méthodologies:
+- Agile, Scrum, Kanban
+- DevOps, Architecture microservices
+
+Certifications:
+- AWS Solutions Architect Associate
+- Certified Scrum Master
+
+Langues:
+- Français (natif)
+- Anglais (courant)
+- Arabe (natif)
+
+Expérience significative dans le développement d'ERP avec Odoo.
+Compétences en leadership et gestion de projet.
+Travail d'équipe et communication excellente.</field>
+    </record>
+
+    <!-- Candidat 4: Expert DevOps -->
+    <record id="demo_candidate_expert" model="res.partner">
+        <field name="name">Sophie Leclerc</field>
+        <field name="email">sophie.leclerc@example.com</field>
+        <field name="phone">+33 6 45 67 89 01</field>
+        <field name="comment">Ingénieure DevOps Expert avec 12 ans d'expérience.
+
+Infrastructure Cloud:
+- AWS (EC2, S3, Lambda, RDS, CloudFormation)
+- Azure (VMs, App Service, AKS)
+- Google Cloud Platform
+
+Conteneurisation et Orchestration:
+- Docker, Docker Compose
+- Kubernetes, Helm
+- OpenShift
+
+CI/CD:
+- Jenkins, GitLab CI, GitHub Actions
+- Ansible, Terraform
+- ArgoCD
+
+Monitoring:
+- Prometheus, Grafana
+- ELK Stack (Elasticsearch, Logstash, Kibana)
+
+Langages:
+- Python (scripting automation)
+- Bash, PowerShell
+- YAML, JSON
+
+Certifiée:
+- AWS Solutions Architect Professional
+- Certified Kubernetes Administrator (CKA)
+- HashiCorp Terraform Associate
+
+Management:
+- Gestion d'équipe (lead technique)
+- Méthodologies Agile/DevOps
+- Architecture et design système
+
+Bilingue français/anglais, niveau intermédiaire allemand.</field>
+    </record>
+
+</odoo>

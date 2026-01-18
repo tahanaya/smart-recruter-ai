@@ -1,0 +1,152 @@
+<odoo>
+    <!-- Vue Formulaire Partenaire avec Analyse IA -->
+    <record id="view_partner_form_ai_inherit" model="ir.ui.view">
+        <field name="name">res.partner.form.ai.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Ajout du bouton d'analyse dans le header -->
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <button name="action_analyze_profile"
+                            type="object"
+                            string="🔍 Analyser le Profil"
+                            class="oe_highlight"
+                            help="Lance l'analyse automatique du profil candidat"/>
+                </header>
+            </xpath>
+
+            <!-- Ajout de l'onglet Analyse IA -->
+            <xpath expr="//notebook" position="inside">
+                <page string="📊 Analyse IA Smart Recruiter">
+
+                    <!-- Section Score et Verdict -->
+                    <group>
+                        <group string="🎯 Résultat de l'Analyse">
+                            <field name="ai_score" widget="percentpie"/>
+                            <field name="ai_verdict" widget="badge"
+                                   decoration-danger="ai_verdict == 'low'"
+                                   decoration-warning="ai_verdict == 'medium'"
+                                   decoration-success="ai_verdict == 'high'"/>
+                            <field name="ai_experience_level" widget="badge"
+                                   decoration-info="ai_experience_level == 'junior'"
+                                   decoration-warning="ai_experience_level == 'intermediate'"
+                                   decoration-success="ai_experience_level == 'senior'"
+                                   decoration-primary="ai_experience_level == 'expert'"/>
+                            <field name="ai_analysis_date" readonly="1"/>
+                        </group>
+
+                        <group string="ℹ️ Mode d'emploi">
+                            <div class="alert alert-info" role="alert">
+                                <p><strong>Comment ça marche ?</strong></p>
+                                <ul>
+                                    <li>L'algorithme analyse automatiquement les <strong>"Notes Internes"</strong> du contact</li>
+                                    <li>Il détecte les compétences techniques (Python, Odoo, SQL, Docker, etc.)</li>
+                                    <li>Chaque compétence a un poids différent selon son importance</li>
+                                    <li>Le score est calculé sur 100 avec un système de pondération intelligent</li>
+                                    <li>Le niveau d'expérience est détecté automatiquement (années mentionnées ou mots-clés)</li>
+                                </ul>
+                                <p class="mb-0">
+                                    <strong>Astuce:</strong> Ajoutez des informations dans "Notes Internes" puis cliquez sur "Analyser le Profil"
+                                </p>
+                            </div>
+                        </group>
+                    </group>
+
+                    <!-- Section Compétences Détectées -->
+                    <group string="✅ Compétences Détectées">
+                        <field name="ai_detected_skills" nolabel="1" readonly="1"
+                               widget="text" class="oe_read_only"/>
+                    </group>
+
+                    <!-- Section Compétences Manquantes -->
+                    <group string="⚠️ Compétences Critiques Manquantes">
+                        <field name="ai_missing_skills" nolabel="1" readonly="1"
+                               widget="text" class="oe_read_only"/>
+                    </group>
+
+                    <!-- Section Statistiques Visuelles -->
+                    <group string="📈 Interprétation du Score">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="alert alert-danger text-center">
+                                    <h4>🔴 0-29%</h4>
+                                    <p>Profil Faible</p>
+                                    <small>Compétences insuffisantes pour le poste</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="alert alert-warning text-center">
+                                    <h4>🟠 30-69%</h4>
+                                    <p>Profil Intéressant</p>
+                                    <small>Potentiel avec formation complémentaire</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="alert alert-success text-center">
+                                    <h4>🟢 70-100%</h4>
+                                    <p>Top Profil</p>
+                                    <small>Candidat idéal à recruter rapidement</small>
+                                </div>
+                            </div>
+                        </div>
+                    </group>
+
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- Vue Liste avec Score visible -->
+    <record id="view_partner_tree_ai_inherit" model="ir.ui.view">
+        <field name="name">res.partner.tree.ai.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="decoration-success">ai_score &gt;= 70</attribute>
+                <attribute name="decoration-warning">ai_score &gt;= 30 and ai_score &lt; 70</attribute>
+                <attribute name="decoration-danger">ai_score &lt; 30</attribute>
+            </xpath>
+            <xpath expr="//field[@name='display_name']" position="after">
+                <field name="ai_score" string="Score IA (%)" optional="show"/>
+                <field name="ai_verdict" widget="badge" optional="show"/>
+                <field name="ai_experience_level" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vue Recherche avec filtres IA -->
+    <record id="view_partner_search_ai_inherit" model="ir.ui.view">
+        <field name="name">res.partner.search.ai.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <filter string="🟢 Top Profils (70%+)" name="filter_top_profiles"
+                        domain="[('ai_score', '&gt;=', 70)]"/>
+                <filter string="🟠 Profils Intéressants (30-69%)" name="filter_medium_profiles"
+                        domain="[('ai_score', '&gt;=', 30), ('ai_score', '&lt;', 70)]"/>
+                <filter string="🔴 Profils Faibles (&lt;30%)" name="filter_low_profiles"
+                        domain="[('ai_score', '&lt;', 30)]"/>
+                <separator/>
+                <filter string="Junior" name="filter_junior"
+                        domain="[('ai_experience_level', '=', 'junior')]"/>
+                <filter string="Senior" name="filter_senior"
+                        domain="[('ai_experience_level', '=', 'senior')]"/>
+                <filter string="Expert" name="filter_expert"
+                        domain="[('ai_experience_level', '=', 'expert')]"/>
+                <separator/>
+                <group expand="0" string="Grouper Par">
+                    <filter string="Verdict IA" name="group_by_verdict"
+                            context="{'group_by': 'ai_verdict'}"/>
+                    <filter string="Niveau d'Expérience" name="group_by_experience"
+                            context="{'group_by': 'ai_experience_level'}"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

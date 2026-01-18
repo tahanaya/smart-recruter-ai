@@ -1,0 +1,154 @@
+<odoo>
+    <!-- Vue Formulaire Profil de Poste -->
+    <record id="view_job_profile_form" model="ir.ui.view">
+        <field name="name">smart.recruiter.job.profile.form</field>
+        <field name="model">smart.recruiter.job.profile</field>
+        <field name="arch" type="xml">
+            <form string="Profil de Poste">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <field name="color" widget="color_picker"/>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" placeholder="Ex: Développeur Python Senior"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="active"/>
+                            <field name="priority" widget="priority"/>
+                        </group>
+                        <group>
+                            <field name="min_score_threshold"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <field name="description" placeholder="Description détaillée du profil de poste..."/>
+                        </page>
+                        <page string="Compétences Requises">
+                            <field name="skill_ids">
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                    <field name="skill_type"/>
+                                    <field name="weight"/>
+                                    <field name="is_critical" widget="boolean_toggle"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue Liste Profil de Poste -->
+    <record id="view_job_profile_tree" model="ir.ui.view">
+        <field name="name">smart.recruiter.job.profile.tree</field>
+        <field name="model">smart.recruiter.job.profile</field>
+        <field name="arch" type="xml">
+            <tree string="Profils de Poste">
+                <field name="name"/>
+                <field name="priority" widget="priority"/>
+                <field name="min_score_threshold"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue Kanban Profil de Poste -->
+    <record id="view_job_profile_kanban" model="ir.ui.view">
+        <field name="name">smart.recruiter.job.profile.kanban</field>
+        <field name="model">smart.recruiter.job.profile</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile">
+                <field name="name"/>
+                <field name="priority"/>
+                <field name="color"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_color_#{kanban_getcolor(record.color.raw_value)} oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_card_header">
+                                <div class="o_kanban_card_header_title">
+                                    <div class="o_primary"><field name="name"/></div>
+                                </div>
+                                <div class="o_kanban_card_manage_pane dropdown-menu" role="menu">
+                                    <a role="menuitem" type="edit" class="dropdown-item">Modifier</a>
+                                    <a role="menuitem" type="delete" class="dropdown-item">Supprimer</a>
+                                    <div role="separator" class="dropdown-divider"/>
+                                    <div role="separator" class="dropdown-item-text">Couleur</div>
+                                    <ul class="oe_kanban_colorpicker" data-field="color"/>
+                                </div>
+                            </div>
+                            <div class="o_kanban_card_content">
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <field name="priority" widget="priority"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Vue Recherche Profil de Poste -->
+    <record id="view_job_profile_search" model="ir.ui.view">
+        <field name="name">smart.recruiter.job.profile.search</field>
+        <field name="model">smart.recruiter.job.profile</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher Profils de Poste">
+                <field name="name"/>
+                <field name="description"/>
+                <filter string="Actif" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Archivé" name="inactive" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="Priorité Urgente" name="urgent" domain="[('priority', '=', 'urgent')]"/>
+                <filter string="Priorité Haute" name="high" domain="[('priority', '=', 'high')]"/>
+                <group expand="0" string="Grouper Par">
+                    <filter string="Priorité" name="group_by_priority" context="{'group_by': 'priority'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action Menu pour Profils de Poste -->
+    <record id="action_job_profile" model="ir.actions.act_window">
+        <field name="name">Profils de Poste</field>
+        <field name="res_model">smart.recruiter.job.profile</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créez votre premier profil de poste
+            </p>
+            <p>
+                Les profils de poste vous permettent de définir les compétences
+                requises pour différents types de postes et d'adapter l'algorithme
+                de scoring en conséquence.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Principal Smart Recruiter -->
+    <menuitem id="menu_smart_recruiter_root"
+              name="Smart Recruiter AI"
+              sequence="100"
+              web_icon="smart_recruiter_ai,static/description/icon.png"/>
+
+    <menuitem id="menu_smart_recruiter_config"
+              name="Configuration"
+              parent="menu_smart_recruiter_root"
+              sequence="10"/>
+
+    <menuitem id="menu_job_profile"
+              name="Profils de Poste"
+              parent="menu_smart_recruiter_config"
+              action="action_job_profile"
+              sequence="1"/>
+
+</odoo>
