@@ -4,7 +4,7 @@ import re
 class ResPartnerAi(models.Model):
     _inherit = 'res.partner'
 
-    # --- Nouveau Champ : Sélection du Profil ---
+    # --- Nouveau Champ ---
     job_profile_id = fields.Many2one(
         'smart.recruiter.job.profile',
         string="Profil Ciblé",
@@ -12,11 +12,7 @@ class ResPartnerAi(models.Model):
     )
 
     # --- Champs Existants ---
-    ai_score = fields.Integer(
-        string="Score de Pertinence (%)", 
-        compute='_compute_ai_score', 
-        store=True
-    )
+    ai_score = fields.Integer(string="Score de Pertinence (%)", compute='_compute_ai_score', store=True)
     
     ai_verdict = fields.Selection([
         ('low', '🔴 Profil Faible'),
@@ -38,8 +34,6 @@ class ResPartnerAi(models.Model):
     # --- Détection Expérience ---
     def _detect_experience_level(self, text_content):
         if not text_content: return False
-        
-        # Regex pour "5 ans", "10 years"
         years_patterns = [r'(\d+)\s*(?:\+)?\s*an(?:s|née(?:s)?)', r'(\d+)\s*(?:\+)?\s*year(?:s)?']
         max_years = 0
         for pattern in years_patterns:
@@ -52,23 +46,19 @@ class ResPartnerAi(models.Model):
             elif max_years < 5: return 'intermediate'
             elif max_years < 10: return 'senior'
             else: return 'expert'
-
-        # Mots-clés
-        if any(w in text_content for w in ['junior', 'débutant', 'stagiaire']): return 'junior'
-        if any(w in text_content for w in ['senior', 'confirmé', 'expert', 'lead']): return 'senior'
-        if any(w in text_content for w in ['manager', 'directeur', 'chef']): return 'expert'
-            
+        
+        if any(w in text_content for w in ['junior', 'débutant']): return 'junior'
+        if any(w in text_content for w in ['senior', 'expert']): return 'senior'
         return 'intermediate'
 
-    # --- Moteur "IA" Intelligent (Avec Profil) ---
-    @api.depends('comment', 'job_profile_id') # Déclenché si le profil change
+    # --- Moteur "IA" ---
+    @api.depends('comment', 'job_profile_id')
     def _compute_ai_score(self):
         for record in self:
             score = 0
             detected_skills_list = []
             missing_skills_list = []
             
-            # Reset
             record.ai_experience_level = False
             record.ai_detected_skills = ""
             record.ai_missing_skills = ""
@@ -76,56 +66,45 @@ class ResPartnerAi(models.Model):
             if record.comment:
                 text_content = record.comment.lower()
                 
-                # --- LOGIQUE DE CIBLAGE ---
-                # Si un profil est sélectionné, on ne charge QUE ses compétences
                 if record.job_profile_id:
                     target_skills = record.job_profile_id.skill_ids
                 else:
-                    # Sinon, on charge tout (Scan Global)
                     target_skills = self.env['smart.recruiter.skill'].search([])
                 
                 skills_db = {}
                 critical_skills_set = set()
                 total_possible_score = 0
 
-                # Construction du dictionnaire
                 for skill in target_skills:
-                    key_name = skill.name.lower()
-                    if key_name not in skills_db or skill.weight > skills_db[key_name]:
-                        skills_db[key_name] = skill.weight
+                    key = skill.name.lower()
+                    if key not in skills_db or skill.weight > skills_db[key]:
+                        skills_db[key] = skill.weight
                     if skill.is_critical:
-                        critical_skills_set.add(key_name)
+                        critical_skills_set.add(key)
 
-                # Comparaison
                 for skill_name, weight in skills_db.items():
                     if skill_name in text_content:
                         score += weight
-                        detected_skills_list.append(f"{skill_name.title()} (+{weight} pts)")
+                        detected_skills_list.append(f"{skill_name.title()} (+{weight})")
                     elif skill_name in critical_skills_set:
                         missing_skills_list.append(skill_name.title())
                     
-                    # On calcule le score max sur les compétences critiques ou trouvées
                     if skill_name in critical_skills_set or skill_name in text_content:
                         total_possible_score += weight
 
-                # Calcul Final
                 if total_possible_score > 0:
-                    base_score = min(70, (score / total_possible_score) * 70)
-                    bonus_score = min(30, len(detected_skills_list) * 2)
-                    score = int(base_score + bonus_score)
+                    base = min(70, (score / total_possible_score) * 70)
+                    bonus = min(30, len(detected_skills_list) * 2)
+                    score = int(base + bonus)
                 else:
                     score = 0 if record.job_profile_id else min(100, score)
 
                 record.ai_experience_level = self._detect_experience_level(text_content)
-                record.ai_detected_skills = "✅ " + "\n✅ ".join(detected_skills_list) if detected_skills_list else "Rien détecté."
-                record.ai_missing_skills = "⚠️ " + "\n⚠️ ".join(missing_skills_list) if missing_skills_list else "Aucun manque critique."
-
-            else:
-                score = 0
-                record.ai_detected_skills = "⚠️ Veuillez remplir les notes."
+                record.ai_detected_skills = "✅ " + "\n✅ ".join(detected_skills_list) if detected_skills_list else ""
+                record.ai_missing_skills = "⚠️ " + "\n⚠️ ".join(missing_skills_list) if missing_skills_list else ""
 
             record.ai_score = min(100, score)
-
+            
             if score < 30: record.ai_verdict = 'low'
             elif score < 70: record.ai_verdict = 'medium'
             else: record.ai_verdict = 'high'
@@ -134,13 +113,4 @@ class ResPartnerAi(models.Model):
 
     def action_analyze_profile(self):
         self._compute_ai_score()
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'title': 'Analyse Terminée',
-                'message': f'Nouveau Score : {self.ai_score}%',
-                'type': 'success',
-                'sticky': False,
-            }
-        }
+        return {'type': 'ir.actions.client', 'tag': 'display_notification', 'params': {'title': 'Analyse', 'message': f'Score: {self.ai_score}%', 'type': 'success', 'sticky': False}}
