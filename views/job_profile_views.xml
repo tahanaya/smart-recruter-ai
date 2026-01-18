@@ -1,34 +1,26 @@
 <odoo>
-    <record id="view_job_profile_form_v2" model="ir.ui.view">
-        <field name="name">smart.recruiter.job.profile.form.v2</field>
+    <record id="view_job_profile_form_final" model="ir.ui.view">
+        <field name="name">smart.recruiter.job.profile.form.final</field>
         <field name="model">smart.recruiter.job.profile</field>
         <field name="arch" type="xml">
-            <form string="Profil de Poste">
+            <form>
                 <sheet>
                     <div class="oe_title">
-                        <label for="name" class="oe_edit_only"/>
-                        <h1>
-                            <field name="name" placeholder="Ex: Développeur Python Senior"/>
-                        </h1>
+                        <h1><field name="name" placeholder="Nom du poste..."/></h1>
                     </div>
                     <group>
-                        <group>
-                            <field name="active"/>
-                            <field name="priority" widget="priority"/>
-                        </group>
-                        <group>
-                            <field name="min_score_threshold"/>
-                        </group>
+                        <field name="active"/>
+                        <field name="priority" widget="priority"/>
+                        <field name="min_score_threshold"/>
                     </group>
                     <notebook>
                         <page string="Description">
-                            <field name="description" placeholder="Description détaillée du profil de poste..."/>
+                            <field name="description"/>
                         </page>
-                        <page string="Compétences Requises">
+                        <page string="Compétences">
                             <field name="skill_ids">
                                 <list editable="bottom">
                                     <field name="name"/>
-                                    <field name="skill_type"/>
                                     <field name="weight"/>
                                     <field name="is_critical" widget="boolean_toggle"/>
                                 </list>
@@ -40,56 +32,25 @@
         </field>
     </record>
 
-    <record id="view_job_profile_tree_v2" model="ir.ui.view">
-        <field name="name">smart.recruiter.job.profile.list.v2</field>
+    <record id="view_job_profile_list_final" model="ir.ui.view">
+        <field name="name">smart.recruiter.job.profile.list.final</field>
         <field name="model">smart.recruiter.job.profile</field>
         <field name="arch" type="xml">
-            <list string="Profils de Poste">
+            <list>
                 <field name="name"/>
                 <field name="priority" widget="priority"/>
-                <field name="min_score_threshold"/>
                 <field name="active" widget="boolean_toggle"/>
             </list>
         </field>
     </record>
 
-    <record id="view_job_profile_search_v2" model="ir.ui.view">
-        <field name="name">smart.recruiter.job.profile.search.v2</field>
-        <field name="model">smart.recruiter.job.profile</field>
-        <field name="arch" type="xml">
-            <search string="Rechercher Profils de Poste">
-                <field name="name"/>
-                <filter string="Archivé" name="inactive" domain="[('active', '=', False)]"/>
-            </search>
-        </field>
-    </record>
-
-    <record id="action_job_profile_v2" model="ir.actions.act_window">
+    <record id="action_job_profile_final" model="ir.actions.act_window">
         <field name="name">Profils de Poste</field>
         <field name="res_model">smart.recruiter.job.profile</field>
         <field name="view_mode">list,form</field>
-        <field name="context">{'search_default_active': 1}</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Créez votre premier profil de poste
-            </p>
-        </field>
     </record>
 
-    <menuitem id="menu_smart_recruiter_root"
-              name="Smart Recruiter AI"
-              sequence="100"
-              web_icon="smart_recruiter_ai,static/description/icon.png"/>
-
-    <menuitem id="menu_smart_recruiter_config"
-              name="Configuration"
-              parent="menu_smart_recruiter_root"
-              sequence="10"/>
-
-    <menuitem id="menu_job_profile"
-              name="Profils de Poste"
-              parent="menu_smart_recruiter_config"
-              action="action_job_profile_v2" 
-              sequence="1"/>
-
+    <menuitem id="menu_smart_root_final" name="Smart Recruiter" sequence="10"/>
+    <menuitem id="menu_config_final" name="Configuration" parent="menu_smart_root_final"/>
+    <menuitem id="menu_profiles_final" name="Profils" parent="menu_config_final" action="action_job_profile_final"/>
 </odoo>
