@@ -1,56 +1,51 @@
 <odoo>
-    <record id="view_job_profile_form_final" model="ir.ui.view">
-        <field name="name">smart.recruiter.job.profile.form.final</field>
-        <field name="model">smart.recruiter.job.profile</field>
+    <record id="view_partner_form_ai_final" model="ir.ui.view">
+        <field name="name">res.partner.form.ai.final</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
-            <form>
-                <sheet>
-                    <div class="oe_title">
-                        <h1><field name="name" placeholder="Nom du poste..."/></h1>
-                    </div>
+            
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <button name="action_analyze_profile" type="object" string="🔍 Analyser" class="oe_highlight"/>
+                </header>
+            </xpath>
+
+            <xpath expr="//notebook" position="inside">
+                <page string="📊 Analyse IA">
                     <group>
-                        <field name="active"/>
-                        <field name="priority" widget="priority"/>
-                        <field name="min_score_threshold"/>
+                        <group string="Configuration">
+                            <field name="job_profile_id" options="{'no_create': True}" placeholder="Sélectionnez un profil (ex: Développeur)..."/>
+                        </group>
+                        
+                        <group string="Résultats">
+                            <field name="ai_score" widget="percentpie"/>
+                            <field name="ai_verdict" widget="badge"
+                                   decoration-danger="ai_verdict == 'low'"
+                                   decoration-warning="ai_verdict == 'medium'"
+                                   decoration-success="ai_verdict == 'high'"/>
+                            <field name="ai_experience_level" widget="badge"/>
+                            <field name="ai_analysis_date"/>
+                        </group>
                     </group>
-                    <notebook>
-                        <page string="Description">
-                            <field name="description"/>
-                        </page>
-                        <page string="Compétences">
-                            <field name="skill_ids">
-                                <list editable="bottom">
-                                    <field name="name"/>
-                                    <field name="weight"/>
-                                    <field name="is_critical" widget="boolean_toggle"/>
-                                </list>
-                            </field>
-                        </page>
-                    </notebook>
-                </sheet>
-            </form>
+                    <group string="Détails">
+                        <field name="ai_detected_skills" readonly="1"/>
+                        <field name="ai_missing_skills" readonly="1"/>
+                    </group>
+                </page>
+            </xpath>
         </field>
     </record>
 
-    <record id="view_job_profile_list_final" model="ir.ui.view">
-        <field name="name">smart.recruiter.job.profile.list.final</field>
-        <field name="model">smart.recruiter.job.profile</field>
+    <record id="view_partner_list_ai_final" model="ir.ui.view">
+        <field name="name">res.partner.list.ai.final</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree"/>
         <field name="arch" type="xml">
-            <list>
-                <field name="name"/>
-                <field name="priority" widget="priority"/>
-                <field name="active" widget="boolean_toggle"/>
-            </list>
+            <xpath expr="//list" position="inside">
+                <field name="ai_score" string="Score IA" optional="show"/>
+                <field name="ai_verdict" widget="badge" optional="show"/>
+            </xpath>
         </field>
     </record>
-
-    <record id="action_job_profile_final" model="ir.actions.act_window">
-        <field name="name">Profils de Poste</field>
-        <field name="res_model">smart.recruiter.job.profile</field>
-        <field name="view_mode">list,form</field>
-    </record>
-
-    <menuitem id="menu_smart_root_final" name="Smart Recruiter" sequence="10"/>
-    <menuitem id="menu_config_final" name="Configuration" parent="menu_smart_root_final"/>
-    <menuitem id="menu_profiles_final" name="Profils" parent="menu_config_final" action="action_job_profile_final"/>
 </odoo>
